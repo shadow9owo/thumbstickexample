@@ -59,20 +59,36 @@ int main(void)
 
         RenderThumbstick();
 
-        for (size_t a = 0;a<GetTouchPointCount();a++)
+        for (size_t a = 0; a < GetTouchPointCount(); a++)
         {
-            if (CheckCollisionCircleRec(CenterOfThumbstick,256, (Rectangle){GetTouchPosition(a).x,GetTouchPosition(a).y,4,4}) && !Moving)
+            Vector2 touch = GetTouchPosition(a);
+
+            if (!Moving)
             {
-                //use for movement
-                GetOffsetPosition(GetTouchPosition(a));
-                Moving = true;
-                MovingIndex = a;
-            }else {
-                if (Moving && a == MovingIndex)
+                if (CheckCollisionCircleRec(
+                        CenterOfThumbstick,
+                        256,
+                        (Rectangle){touch.x, touch.y, 4, 4}))
                 {
-                    GetOffsetPosition(GetTouchPosition(a));
+                    Moving = true;
+                    MovingIndex = a;
+
+                    GetOffsetPosition(touch);
                 }
             }
+            else
+            {
+                if (a == MovingIndex)
+                {
+                    GetOffsetPosition(touch);
+                }
+            }
+        }
+
+        if (MovingIndex >= GetTouchPointCount())
+        {
+            Moving = false;
+            ThumbStickOffset = (Vector2){0,0};
         }
 
         EndDrawing();
